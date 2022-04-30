@@ -7,9 +7,15 @@ import pandas as pd
 import plotly.graph_objects as go
 
 
-#Load in the data
+#@Brief - Load in the data
+#@Param[in] INPUT_DIR - name of the input directory
+#@Return - dataset for each CSV in the folder
 def load_data(INPUT_DIR):
   return [pd.read_csv(os.path.join(INPUT_DIR, file_), index_col=0) for file_ in os.listdir(INPUT_DIR)]
+#@Brief - Linearly interpolates between each datapoint in the
+# set of data
+#@Param[in] data - Data to linearly interpolate
+#@return - data linearly interpolated
 def linear_interpolate_data(data):
   data = np.array(data)
   interpolate_values = np.arange(0,1,0.1)
@@ -20,15 +26,23 @@ def linear_interpolate_data(data):
           ret.append(temp.T)
   ret = np.array(ret)
   return ret
-#Adds padding to the players and statis data
+#@Brief - Adds padding to the players and statis data
 #so that the lengths of the data match
+#@Param[in] data - data to pad
+#@Param[in] amt_to_pad - number of elements to pad
+#@Param[in] where_to_instert - where in the array to insert padding
+#@return - padded data
 def add_padding(data, amt_to_pad, where_to_insert):
   data = np.array(data)
   padding = [data[where_to_insert]] * amt_to_pad
   data = np.insert(data, where_to_insert, padding, axis=0)
   return data
-#Need to pad the rally data differently than
+#@Brief - Need to pad the rally data differently than
 # other types of data
+#@Param[in] data - meta data to pad
+#@Param[in] amt_to_pad - number of elements to pad
+#@Param[in] num_strokes - number of strokes that to pad by
+#@Return - padded data
 def pad_rally_meta_data(data, amt_to_pad, num_strokes):
   data = np.array(data)
   temp = []
@@ -39,7 +53,10 @@ def pad_rally_meta_data(data, amt_to_pad, num_strokes):
   data = np.insert(data, len(data), data[-1], axis=0)
   data.resize((len(data) - num_strokes), 8)
   return np.array(data)
-#Extracts the rally data for the given rally id
+#@Brief - Extracts the rally data for the given rally id
+#@Param[in] data_extract - total data to extract data from
+#@Param[in] rally_id - rally we want to extract data from
+#@return - all data needed for visualization
 def extract_rally_data(data_extract, rally_id):
   player1 = []
   player2 = []
@@ -79,7 +96,10 @@ def extract_rally_data(data_extract, rally_id):
   ball = np.insert(ball, len(ball), np.asarray([data.loc[0, 'x'], data.loc[0, 'y']]), axis=0)
   rally_metadata = pad_rally_meta_data(rally_metadata, 10, data.shape[0])
   return player1, player2, ball, rally_metadata
-#Creates the figure for the animation
+#@Brief - creates the figure for the animation
+#@Param[in] data - tennis data
+#@Param[in] rally_id - Rally we want to replay
+#@Return plotly go figure
 def create_figure(data, rally_id):
   player1, player2, ball, rally_metadata = extract_rally_data(data, rally_id)
 
