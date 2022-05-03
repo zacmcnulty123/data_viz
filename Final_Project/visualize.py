@@ -264,7 +264,7 @@ def create_figure(data, rally_id):
 #Main method for the program
 def main(argv):
   INPUT_DIR = './Tennis_data'
-  rallies, points, events, serves = load_data(INPUT_DIR)
+  points, events = load_data(INPUT_DIR)
   temp = events.merge(right=points, how='left', left_on='rallyid', right_on='rallyid')
   temp = temp.dropna()
   fig = create_figure(temp, int(argv[1]))
